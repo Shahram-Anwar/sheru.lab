@@ -25,10 +25,18 @@ const auth = getAuth(app);
 // Book List (Sample)
 const books = [
   { title: "Eloquent JavaScript", image: "https://via.placeholder.com/150", file: "#" },
-  { title: "You Don’t Know JS", image: "https://via.placeholder.com/150", file: "#" },
+  { title: "You Don't Know JS", image: "https://via.placeholder.com/150", file: "#" },
   { title: "Clean Code", image: "https://via.placeholder.com/150", file: "#" },
-  { title: "Sheru’s Guide to Reading", image: "https://via.placeholder.com/150", file: "#" }
+  { title: "Sheru's Guide to Reading", image: "https://via.placeholder.com/150", file: "#" }
 ];
+
+// Global functions
+window.searchBooks = function(term) {
+  const filtered = books.filter(book =>
+    book.title.toLowerCase().includes(term.toLowerCase())
+  );
+  renderBooks(filtered);
+};
 
 // Check auth state on load
 onAuthStateChanged(auth, (user) => {
@@ -137,7 +145,7 @@ function showHome() {
     </nav>
     <div class="search-bar">
       <input type="text" placeholder="Search eBooks..." oninput="searchBooks(this.value)" />
-      <button>Search</button>
+      <button type="button">Search</button>
     </div>
     <div class="grid" id="bookGrid"></div>
   `;
@@ -153,19 +161,13 @@ function showHome() {
 // Render books
 function renderBooks(bookList) {
   const grid = document.getElementById("bookGrid");
-  grid.innerHTML = bookList.map(book => `
-    <div class="book">
-      <img src="${book.image}" alt="${book.title}" />
-      <h3>${book.title}</h3>
-      <button onclick="window.location.href='${book.file}'">Download</button>
-    </div>
-  `).join('');
+  if (grid) {
+    grid.innerHTML = bookList.map(book => `
+      <div class="book">
+        <img src="${book.image}" alt="${book.title}" />
+        <h3>${book.title}</h3>
+        <button onclick="window.location.href='${book.file}'">Download</button>
+      </div>
+    `).join('');
+  }
 }
-
-// Search books (must be global so it's usable in HTML inline)
-window.searchBooks = function(term) {
-  const filtered = books.filter(book =>
-    book.title.toLowerCase().includes(term.toLowerCase())
-  );
-  renderBooks(filtered);
-};
